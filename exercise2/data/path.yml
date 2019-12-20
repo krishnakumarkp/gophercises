@@ -1,0 +1,4 @@
+- path: /dogs
+  url: https://www.petfinder.com/dog-breeds/
+- path: /cats
+  url: https://en.wikipedia.org/wiki/Cats_(2019_film)
