@@ -17,7 +17,7 @@ func New(filename string) (domain.RedirectStore, error) {
 	case ".json":
 		store, err = NewJsonStore(filename)
 	case ".yml":
-		//store = store.NewYamlStore(filename)
+		store, err = NewYamlStore(filename)
 	case ".bolt":
 		//store = store.NewBoltStore(filename)
 	default:
