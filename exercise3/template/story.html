@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+h1 {
+  color: blue;
+  font-family: "Comic Sans MS", "Comic Sans";
+  font-size: 200%;
+
+}
+p  {
+  color: red;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 160%;
+}
+a { 
+    display:block; 
+    margin-bottom:10px;
+    display: list-item;                                                 
+    list-style-type: disc;
+    color: blue;
+    font-family: "Comic Sans MS", "Comic Sans";
+    font-size: 100%;
+}
+</style>
+</head>
+<body>
+
+<h1>{{.Title}}</h1>
+{{ range $s := .Story }}
+<p>{{ $s }}</p>
+{{ end }}
+
+{{ range $option := .Options}}
+<a href="http://localhost/story/{{ $option.Arc}}">{{ $option.Text}}</a><br/>
+{{ end }}
+
+</body>
+</html>
