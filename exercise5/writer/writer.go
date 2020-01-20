@@ -1,5 +1,10 @@
 package writer
 
+type Writable interface {
+	Write(Writer) error
+	GetData() []string
+}
+
 type Writer interface {
-	Write(map[string]struct{}) error
+	Write(Writable) error
 }

@@ -2,6 +2,7 @@ package xmlwriter
 
 import (
 	"encoding/xml"
+	"github.com/krishnakumarkp/exercise5/writer"
 	"io/ioutil"
 )
 
@@ -19,11 +20,13 @@ type Url struct {
 	Loc     string   `xml:"loc"`
 }
 
-func (w Writer) Write(links map[string]struct{}) error {
+func (w Writer) Write(writable writer.Writable) error {
 
 	set := &Urlset{Xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9"}
 
-	for v := range links {
+	data := writable.GetData()
+
+	for _, v := range data {
 		set.Urls = append(set.Urls, Url{Loc: v})
 	}
 

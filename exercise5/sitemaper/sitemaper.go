@@ -54,9 +54,19 @@ func (s *Sitemap) Crawl(surl string, depth int, fetcher fetcher.Fetcher) {
 	return
 }
 func (s *Sitemap) Write(w writer.Writer) error {
-	err := w.Write(s.Links)
+	err := w.Write(s)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (s *Sitemap) GetData() []string {
+	var data []string
+
+	for link := range s.Links {
+		data = append(data, link)
+	}
+
+	return data
 }
