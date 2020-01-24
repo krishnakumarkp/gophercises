@@ -7,35 +7,51 @@ import (
 	"github.com/krishnakumarkp/exercise5/writer"
 )
 
-type Sitemap struct {
-	Url   *url.URL
-	Links map[string]struct{}
+type Sitemaper struct {
+	Writer  writer.Writer
+	Fetcher fetcher.Fetcher
+	Url     *url.URL
+	Links   map[string]struct{}
 }
 
-func NewSiteMap(url *url.URL) *Sitemap {
-	return &Sitemap{
-		Url:   url,
-		Links: make(map[string]struct{}),
+func NewSiteMaper(fetcher fetcher.Fetcher, writer writer.Writer) Sitemaper {
+	return Sitemaper{
+		Writer:  writer,
+		Fetcher: fetcher,
+		Links:   make(map[string]struct{}),
 	}
 }
 
-func (s *Sitemap) Crawl(surl string, depth int, fetcher fetcher.Fetcher) {
+func (s *Sitemaper) Start(webUrl string, depth int) error {
+	u, err := url.Parse(webUrl)
+	if err != nil {
+		return err
+	}
+	if u.Scheme == "" {
+		webUrl = "http://" + webUrl
+	}
+	u, err = url.Parse(webUrl)
+	if err != nil {
+		return err
+	}
+	s.Url = u
+	s.crawl(webUrl, depth)
+	s.Write(s.Writer)
+	return nil
+}
+func (s *Sitemaper) crawl(surl string, depth int) {
 	if depth <= 0 {
 		return
 	}
 
-	links, err := fetcher.Fetch(surl)
+	links, err := s.Fetcher.Fetch(surl)
 	if err != nil {
 		return
 	}
-
 	for _, v := range links {
-		//fmt.Printf("href: %s\ntext: %s\n", v.Href, v.Text)
 		if v.Href != "" {
 			u, err := url.Parse(v.Href)
 			if err == nil {
-				//log.Fatal(err)
-
 				if u.Scheme == "" {
 					u = s.Url.ResolveReference(u)
 				}
@@ -45,15 +61,14 @@ func (s *Sitemap) Crawl(surl string, depth int, fetcher fetcher.Fetcher) {
 				absoluteUrl := u.String()
 				if _, ok := s.Links[absoluteUrl]; !ok {
 					s.Links[absoluteUrl] = struct{}{}
-					s.Crawl(absoluteUrl, depth-1, fetcher)
+					s.crawl(absoluteUrl, depth-1)
 				}
-
 			}
 		}
 	}
 	return
 }
-func (s *Sitemap) Write(w writer.Writer) error {
+func (s *Sitemaper) Write(w writer.Writer) error {
 	err := w.Write(s)
 	if err != nil {
 		return err
@@ -61,12 +76,10 @@ func (s *Sitemap) Write(w writer.Writer) error {
 	return nil
 }
 
-func (s *Sitemap) GetData() []string {
+func (s *Sitemaper) GetData() []string {
 	var data []string
-
 	for link := range s.Links {
 		data = append(data, link)
 	}
-
 	return data
 }
